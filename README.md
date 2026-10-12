@@ -154,6 +154,8 @@ See [SECURITY.md](SECURITY.md).
 
 The implementations were extracted from working project code and cleaned for public reuse.
 
+Open WebUI v0.1.1 now checks server-supplied chat IDs against an allowed identifier format before using them in API paths or evidence filenames. This rejects malformed IDs instead of allowing unsafe path characters. Automated Python checks are available in [GitHub Actions](.github/workflows/tests.yml).
+
 Agent and WebUI APIs evolve. If a host changes its session or chat API, Fresh Worker may need a small compatibility update. Version-specific compatibility notes belong in the implementation README files.
 
 ## Repository layout
@@ -177,7 +179,7 @@ Fresh-Worker/
 
 ## Status
 
-**0.1.0 — initial public release**
+**Pi:** initial public implementation. **Open WebUI:** v0.1.1 security maintenance update.
 
 The core Fresh Worker behaviour has been used in real local-model development workflows. This repository packages the reusable parts and removes project-specific verification helpers and paths.
 
