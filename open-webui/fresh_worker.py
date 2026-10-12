@@ -3,7 +3,7 @@
 title: Fresh Worker
 author: Nundrian
 git_url: https://github.com/Nundrian/Fresh-Worker
-version: 0.1.0
+version: 0.1.1
 description: Run one bounded prompt in a brand-new saved Open WebUI chat and return its completed response.
 requirements: httpx
 licence: MIT
@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import re
 import time
 import uuid
 from typing import Any, Optional
@@ -26,6 +27,13 @@ from pydantic import BaseModel, Field
 
 
 class Tools:
+    @staticmethod
+    def _validate_chat_id(value: object) -> str:
+        """Reject unsafe server-provided IDs before URL or filename interpolation."""
+        if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9_-]{1,128}", value):
+            raise RuntimeError("Open WebUI returned an invalid or unsafe chat ID.")
+        return value
+
     class Valves(BaseModel):
         base_url: str = Field(
             default="",
@@ -253,12 +261,7 @@ class Tools:
                     f"POST /api/v1/chats/new returned non-object (HTTP {status})"
                 )
 
-            chat_id = created.get("id")
-
-            if not isinstance(chat_id, str) or not chat_id:
-                raise RuntimeError(
-                    f"POST /api/v1/chats/new: missing chat ID (HTTP {status})"
-                )
+            chat_id = self._validate_chat_id(created.get("id"))
 
             await emit(f"Fresh Worker chat created: {chat_id}")
 
