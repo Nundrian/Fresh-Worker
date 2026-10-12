@@ -12,7 +12,7 @@ The Pi extension creates another Pi session using the parent's active model/prov
 
 The Open WebUI implementation is a Workspace Tool. Workspace Tools execute Python code on the Open WebUI server.
 
-The tool also requires an Open WebUI API key and makes authenticated HTTP requests to the configured `base_url`.
+The tool also requires an Open WebUI API key and makes authenticated HTTP requests to the configured `base_url`. It uses httpx without redirect following by default. The v0.1.1 release rejects server-returned chat IDs containing path separator or URL syntax characters before constructing request paths or evidence filenames.
 
 ## Recommendations
 
