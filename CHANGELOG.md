@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1 — 2026-10-12
+
+Open WebUI security maintenance release (Pi extension unchanged).
+
+- Validate server-provided chat IDs before use in URL paths or optional evidence filenames.
+- Add regression coverage for unsafe chat ID characters and GitHub Actions Python checks.
+
+
 ## 0.1.0 — 2026-09-27
 
 Initial public release.
