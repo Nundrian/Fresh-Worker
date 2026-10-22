@@ -7,7 +7,7 @@ It gives a model one bounded task in a **brand-new conversation/session with no 
 This repository contains two harness-specific implementations:
 
 - **Pi** — a native Pi extension that starts a completely new Pi agent session using the current model and thinking level, with tools disabled.
-- **Open WebUI** — a Workspace Tool that creates a separate saved Open WebUI chat, sends one prompt to a configured worker model, waits for completion, and returns the result.
+- **Open WebUI** — a Workspace Tool that creates a separate saved chat, uses the calling chat's selected model by default (with optional override or fallback), sends one bounded prompt, waits for completion, and returns the result.
 
 They implement the same pattern, but they are intentionally not forced into one universal abstraction. Each version uses the native mechanisms of its host.
 
@@ -75,7 +75,7 @@ See [pi/README.md](pi/README.md).
 The Open WebUI implementation:
 
 1. creates a new saved Open WebUI chat;
-2. uses the worker model configured in its Valves;
+2. uses the calling chat's selected model by default, supports an explicit model override, and optionally falls back to `worker_model` in Valves;
 3. sends exactly one supplied prompt;
 4. explicitly disables optional WebUI features for the worker request;
 5. polls the server-side task until completion;
@@ -154,7 +154,7 @@ See [SECURITY.md](SECURITY.md).
 
 The implementations were extracted from working project code and cleaned for public reuse.
 
-Open WebUI v0.1.1 now checks server-supplied chat IDs against an allowed identifier format before using them in API paths or evidence filenames. This rejects malformed IDs instead of allowing unsafe path characters. Automated Python checks are available in [GitHub Actions](.github/workflows/tests.yml).
+Open WebUI v0.1.3 retains safe chat-ID validation, improves completion/error handling, and automatically selects the current chat model from Open WebUI metadata. The original v0.1.1 safety regression checks remain in [GitHub Actions](.github/workflows/tests.yml).
 
 Agent and WebUI APIs evolve. If a host changes its session or chat API, Fresh Worker may need a small compatibility update. Version-specific compatibility notes belong in the implementation README files.
 
@@ -179,7 +179,7 @@ Fresh-Worker/
 
 ## Status
 
-**Pi:** initial public implementation. **Open WebUI:** v0.1.1 security maintenance update.
+**Pi:** initial public implementation (unchanged). **Open WebUI:** v0.1.3 with automatic model selection and improved execution validation. A live end-to-end test has passed with `bonsai-2:27b`; other models still need individual testing.
 
 The core Fresh Worker behaviour has been used in real local-model development workflows. This repository packages the reusable parts and removes project-specific verification helpers and paths.
 
