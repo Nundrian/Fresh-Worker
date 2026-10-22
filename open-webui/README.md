@@ -29,7 +29,7 @@ The tool metadata declares `httpx` as a requirement.
 6. Configure:
    - `base_url`
    - `api_key`
-   - `worker_model`
+   - `worker_model` (optional fallback; normally leave blank)
 7. Enable the Fresh Worker tool for the parent model/chat.
 
 Open WebUI's documentation notes that Workspace Tools execute Python on the server. Install only code you trust.
@@ -56,11 +56,15 @@ An Open WebUI API key used by the tool to create and retrieve chats.
 
 Treat it as a secret.
 
-### `worker_model`
+### Model selection (automatic by default)
 
-The exact model ID exposed by your Open WebUI instance.
+Fresh Worker v0.1.3 automatically uses the **model selected in the calling Open WebUI chat**, obtained from Open WebUI's tool metadata. You do **not** have to look up or enter a model ID when switching between models.
 
-The public version intentionally has no hard-coded model default because a repository download should not silently assume a particular local model.
+`worker_model` is an **optional fallback** model ID, used only when Open WebUI does not supply a model in the calling chat metadata. Leave it blank for normal use. No particular model is hard-coded.
+
+To use a different worker model for a particular call, pass the optional `model` parameter with its exact Open WebUI model ID. An explicit override takes precedence over the current chat model and the fallback.
+
+The tool also accepts an optional separate `system_prompt`, which is empty by default. Parent chat history is not copied into the worker.
 
 ### `wait_timeout`
 
@@ -129,6 +133,17 @@ The tool itself accepts:
 }
 ```
 
+An explicit model override is optional:
+
+```json
+{
+  "prompt": "Complete self-contained worker instruction",
+  "model": "exact-model-id"
+}
+```
+
+With no `model` argument, the worker uses the calling chat's selected model. In the parent chat, make sure the Fresh Worker tool is enabled for that model before asking it to run.
+
 ## Returned result
 
 The tool returns a structure containing:
@@ -142,6 +157,8 @@ The tool returns a structure containing:
 The saved chat ID lets you inspect the independent worker run in Open WebUI.
 
 ## Compatibility warning
+
+The v0.1.3 code has passed a live end-to-end test with `bonsai-2:27b` on the maintainer's Open WebUI setup. That does **not** establish compatibility with every model or Open WebUI version. Earlier v0.1.2 logic was exercised on Open WebUI 0.11.3; v0.1.3 should be checked on other host versions as APIs evolve.
 
 This implementation uses Open WebUI chat/task endpoints including:
 
